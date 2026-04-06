@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Figma → Illustrator</title>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600&family=Google+Sans+Display:wght@400;500;700&family=Google+Sans+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+<style>
+  :root {
+    --md-primary: #1A73E8;
+    --md-on-primary: #fff;
+    --md-primary-container: #D3E3FD;
+    --md-on-primary-container: #0D2B6B;
+    --md-secondary: #5F6368;
+    --md-secondary-container: #E8EAED;
+    --md-surface: #F8F9FA;
+    --md-surface-1: #fff;
+    --md-surface-2: #F1F3F4;
+    --md-surface-variant: #E8EAED;
+    --md-on-surface: #202124;
+    --md-on-surface-variant: #5F6368;
+    --md-outline: #DADCE0;
+    --md-outline-variant: #E8EAED;
+    --md-error: #D93025;
+    --md-error-container: #FCE8E6;
+    --md-success: #137333;
+    --md-success-container: #E6F4EA;
+    --md-shadow: 0 1px 3px rgba(60,64,67,.15), 0 2px 6px rgba(60,64,67,.1);
+    --md-shadow-2: 0 4px 12px rgba(60,64,67,.15), 0 1px 3px rgba(60,64,67,.1);
+    --md-radius-xs: 4px;
+    --md-radius-sm: 8px;
+    --md-radius-md: 12px;
+    --md-radius-lg: 16px;
+    --md-radius-xl: 24px;
+    --md-radius-full: 50px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Google Sans', sans-serif;
+    background: var(--md-surface);
+    color: var(--md-on-surface);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    background: var(--md-surface-1);
+    border-bottom: 1px solid var(--md-outline);
+    padding: 0 24px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topbar-logo {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: var(--md-primary);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 18px;
+  }
+  .topbar h1 {
+    font-family: 'Google Sans Display', sans-serif;
+    font-size: 20px; font-weight: 600;
+    color: var(--md-on-surface);
+    letter-spacing: -0.3px;
+  }
+  .topbar h1 span { color: var(--md-primary); }
+  .topbar-spacer { flex: 1; }
+  .badge {
+    background: var(--md-primary-container);
+    color: var(--md-on-primary-container);
+    font-size: 11px; font-weight: 600;
+    padding: 3px 10px;
+    border-radius: var(--md-radius-full);
+    letter-spacing: 0.3px;
+  }
+
+  /* ── LAYOUT ── */
+  .main {
+    flex: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
+    width: 100%;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--md-surface-1);
+    border-radius: var(--md-radius-xl);
+    border: 1px solid var(--md-outline);
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 20px 24px 0;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .card-header .material-symbols-outlined {
+    color: var(--md-primary); font-size: 22px;
+  }
+  .card-header h2 {
+    font-size: 15px; font-weight: 600;
+    color: var(--md-on-surface);
+  }
+  .card-header p {
+    font-size: 13px; color: var(--md-on-surface-variant);
+    margin-top: 1px;
+  }
+  .card-body { padding: 20px 24px 24px; }
+
+  /* ── STEP INDICATOR ── */
+  .steps {
+    display: flex; align-items: center; gap: 0;
+    margin-bottom: 32px;
+  }
+  .step {
+    display: flex; align-items: center; gap: 8px;
+    flex: 1;
+    position: relative;
+  }
+  .step-num {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--md-outline);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600;
+    color: var(--md-on-surface-variant);
+    background: var(--md-surface-1);
+    flex-shrink: 0;
+    transition: all .25s;
+    z-index: 1;
+  }
+  .step.active .step-num {
+    background: var(--md-primary); border-color: var(--md-primary);
+    color: white;
+  }
+  .step.done .step-num {
+    background: var(--md-success-container); border-color: var(--md-success);
+    color: var(--md-success); font-size: 16px;
+  }
+  .step-label { font-size: 12px; font-weight: 500; color: var(--md-on-surface-variant); }
+  .step.active .step-label { color: var(--md-primary); font-weight: 600; }
+  .step.done .step-label { color: var(--md-success); }
+  .step-line {
+    flex: 1; height: 2px; background: var(--md-outline);
+    margin: 0 4px; transition: background .3s;
+  }
+  .step-line.done { background: var(--md-success); }
+
+  /* ── FORM FIELDS ── */
+  .field { margin-bottom: 16px; }
+  .field label {
+    display: block; font-size: 12px; font-weight: 600;
+    color: var(--md-on-surface-variant);
+    margin-bottom: 6px; letter-spacing: 0.4px; text-transform: uppercase;
+  }
+  .field-wrap { position: relative; }
+  .field-wrap .material-symbols-outlined {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    font-size: 18px; color: var(--md-on-surface-variant);
+    pointer-events: none;
+  }
+  input[type="text"], input[type="password"] {
+    width: 100%;
+    height: 48px;
+    border: 1.5px solid var(--md-outline);
+    border-radius: var(--md-radius-md);
+    padding: 0 16px 0 44px;
+    font-family: 'Google Sans', sans-serif;
+    font-size: 14px;
+    color: var(--md-on-surface);
+    background: var(--md-surface-1);
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  input[type="text"]:focus, input[type="password"]:focus {
+    border-color: var(--md-primary);
+    box-shadow: 0 0 0 3px rgba(26,115,232,.12);
+  }
+  input[type="password"] { font-family: 'Google Sans Mono', monospace; letter-spacing: 2px; }
+  .field-hint {
+    font-size: 11.5px; color: var(--md-on-surface-variant);
+    margin-top: 5px; line-height: 1.5;
+  }
+  .field-hint a { color: var(--md-primary); text-decoration: none; }
+  .field-hint a:hover { text-decoration: underline; }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    height: 40px; padding: 0 20px;
+    border-radius: var(--md-radius-full);
+    font-family: 'Google Sans', sans-serif;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer; border: none; outline: none;
+    transition: all .2s; position: relative; overflow: hidden;
+    letter-spacing: 0.1px;
+    text-decoration: none;
+  }
+  .btn .material-symbols-outlined { font-size: 18px; }
+  .btn-primary {
+    background: var(--md-primary); color: var(--md-on-primary);
+    box-shadow: var(--md-shadow);
+  }
+  .btn-primary:hover { background: #1557B0; box-shadow: var(--md-shadow-2); }
+  .btn-primary:active { transform: scale(0.97); }
+  .btn-tonal {
+    background: var(--md-primary-container); color: var(--md-on-primary-container);
+  }
+  .btn-tonal:hover { filter: brightness(0.95); }
+  .btn-outlined {
+    background: transparent; color: var(--md-primary);
+    border: 1.5px solid var(--md-outline);
+  }
+  .btn-outlined:hover { background: var(--md-primary-container); }
+  .btn-text {
+    background: transparent; color: var(--md-primary); padding: 0 12px;
+  }
+  .btn-text:hover { background: var(--md-primary-container); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+  .btn-lg { height: 48px; padding: 0 28px; font-size: 15px; }
+
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+  /* ── INFO BOX ── */
+  .info-box {
+    background: var(--md-primary-container);
+    border-radius: var(--md-radius-md);
+    padding: 12px 16px;
+    display: flex; gap: 10px; align-items: flex-start;
+    margin-bottom: 20px;
+  }
+  .info-box .material-symbols-outlined { color: var(--md-primary); font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .info-box p { font-size: 13px; color: var(--md-on-primary-container); line-height: 1.55; }
+  .info-box p strong { font-weight: 600; }
+
+  .warn-box {
+    background: #FEF3C7; border-radius: var(--md-radius-md);
+    padding: 12px 16px; display: flex; gap: 10px;
+    margin-bottom: 20px;
+  }
+  .warn-box .material-symbols-outlined { color: #D97706; font-size: 18px; flex-shrink: 0; }
+  .warn-box p { font-size: 13px; color: #92400E; line-height: 1.55; }
+
+  .error-box {
+    background: var(--md-error-container); border-radius: var(--md-radius-md);
+    padding: 12px 16px; display: flex; gap: 10px;
+    margin-bottom: 16px;
+  }
+  .error-box .material-symbols-outlined { color: var(--md-error); font-size: 18px; flex-shrink: 0; }
+  .error-box p { font-size: 13px; color: #6B1111; line-height: 1.55; }
+
+  /* ── FRAME PICKER ── */
+  .frames-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+    margin-top: 4px;
+  }
+  .frame-card {
+    border: 2px solid var(--md-outline);
+    border-radius: var(--md-radius-lg);
+    padding: 12px;
+    cursor: pointer;
+    transition: all .2s;
+    background: var(--md-surface);
+    position: relative;
+  }
+  .frame-card:hover { border-color: var(--md-primary); background: var(--md-primary-container); }
+  .frame-card.selected {
+    border-color: var(--md-primary);
+    background: var(--md-primary-container);
+  }
+  .frame-card.selected::after {
+    content: 'check_circle';
+    font-family: 'Material Symbols Outlined';
+    position: absolute; top: 8px; right: 8px;
+    color: var(--md-primary); font-size: 20px;
+  }
+  .frame-thumb {
+    width: 100%; aspect-ratio: 4/3;
+    background: var(--md-surface-2);
+    border-radius: var(--md-radius-sm);
+    margin-bottom: 8px;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .frame-thumb img { width: 100%; height: 100%; object-fit: contain; }
+  .frame-thumb .material-symbols-outlined { font-size: 32px; color: var(--md-outline); }
+  .frame-name {
+    font-size: 12px; font-weight: 600;
+    color: var(--md-on-surface);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .frame-size { font-size: 11px; color: var(--md-on-surface-variant); margin-top: 2px; }
+
+  /* ── LOADING ── */
+  .loading {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 16px; padding: 40px 0; color: var(--md-on-surface-variant);
+  }
+  .spinner {
+    width: 40px; height: 40px;
+    border: 3px solid var(--md-outline);
+    border-top-color: var(--md-primary);
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading p { font-size: 14px; color: var(--md-on-surface-variant); }
+
+  /* ── PREVIEW ── */
+  .preview-area {
+    border: 1.5px dashed var(--md-outline);
+    border-radius: var(--md-radius-lg);
+    background: var(--md-surface-2);
+    min-height: 200px;
+    display: flex; align-items: center; justify-content: center;
+    overflow: auto;
+    padding: 16px;
+    position: relative;
+  }
+  .preview-area svg, .preview-area img {
+    max-width: 100%; max-height: 480px;
+    border-radius: var(--md-radius-sm);
+    filter: drop-shadow(var(--md-shadow));
+  }
+
+  /* ── OUTPUT SECTION ── */
+  .output-meta {
+    display: flex; gap: 10px; flex-wrap: wrap; margin: 16px 0 20px;
+  }
+  .chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--md-secondary-container); color: var(--md-secondary);
+    border-radius: var(--md-radius-full);
+    padding: 5px 12px; font-size: 12px; font-weight: 500;
+  }
+  .chip .material-symbols-outlined { font-size: 14px; }
+
+  .download-row {
+    display: flex; gap: 12px; flex-wrap: wrap;
+  }
+  .download-btn {
+    display: flex; flex-direction: column; align-items: flex-start;
+    background: var(--md-surface-2);
+    border: 1.5px solid var(--md-outline);
+    border-radius: var(--md-radius-lg);
+    padding: 14px 20px;
+    cursor: pointer;
+    transition: all .2s;
+    gap: 4px;
+    min-width: 140px;
+    text-decoration: none;
+  }
+  .download-btn:hover {
+    border-color: var(--md-primary);
+    background: var(--md-primary-container);
+  }
+  .download-btn-label {
+    font-size: 11px; font-weight: 600;
+    color: var(--md-on-surface-variant);
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .download-btn-type {
+    font-size: 18px; font-weight: 700;
+    color: var(--md-primary); letter-spacing: -0.5px;
+  }
+  .download-btn-desc { font-size: 11px; color: var(--md-on-surface-variant); }
+
+  /* ── DIVIDER ── */
+  .divider { height: 1px; background: var(--md-outline); margin: 24px 0; }
+
+  /* ── SECTION SPACING ── */
+  .section { margin-top: 24px; }
+  .section-title {
+    font-size: 13px; font-weight: 600;
+    color: var(--md-on-surface-variant);
+    text-transform: uppercase; letter-spacing: 0.6px;
+    margin-bottom: 12px;
+  }
+
+  /* ── HIDDEN ── */
+  .hidden { display: none !important; }
+
+  /* ── PAGE SELECTOR ── */
+  .select-wrap { position: relative; }
+  .select-wrap .material-symbols-outlined {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    font-size: 18px; color: var(--md-on-surface-variant); pointer-events: none;
+  }
+  select {
+    width: 100%; height: 48px;
+    border: 1.5px solid var(--md-outline);
+    border-radius: var(--md-radius-md);
+    padding: 0 16px 0 44px;
+    font-family: 'Google Sans', sans-serif;
+    font-size: 14px;
+    color: var(--md-on-surface);
+    background: var(--md-surface-1);
+    appearance: none;
+    outline: none;
+    cursor: pointer;
+    transition: border-color .2s;
+  }
+  select:focus { border-color: var(--md-primary); box-shadow: 0 0 0 3px rgba(26,115,232,.12); }
+  .select-arrow {
+    position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+    font-size: 20px; color: var(--md-on-surface-variant); pointer-events: none;
+  }
+
+  /* ── PAT TOGGLE ── */
+  .pat-toggle {
+    position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer;
+    color: var(--md-on-surface-variant); display: flex; padding: 2px;
+  }
+  .pat-toggle .material-symbols-outlined { font-size: 20px; }
+
+  /* ── SUCCESS STATE ── */
+  .success-banner {
+    background: var(--md-success-container);
+    border-radius: var(--md-radius-md);
+    padding: 12px 16px; display: flex; gap: 10px; align-items: center;
+    margin-bottom: 20px;
+  }
+  .success-banner .material-symbols-outlined { color: var(--md-success); }
+  .success-banner p { font-size: 13px; color: #0D5C2E; font-weight: 500; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    .main { padding: 20px 16px 48px; }
+    .frames-grid { grid-template-columns: repeat(2, 1fr); }
+    .topbar h1 { font-size: 17px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="topbar-logo">
+    <div class="logo-icon">
+      <span class="material-symbols-outlined" style="font-size:18px">architecture</span>
+    </div>
+    <h1>Figma <span>→</span> Illustrator</h1>
+  </div>
+  <div class="topbar-spacer"></div>
+  <span class="badge">REST API</span>
+</header>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- STEP INDICATOR -->
+  <div class="steps" id="steps">
+    <div class="step active" id="step-1">
+      <div class="step-num">1</div>
+      <div class="step-label">Connect</div>
+    </div>
+    <div class="step-line" id="line-1"></div>
+    <div class="step" id="step-2">
+      <div class="step-num">2</div>
+      <div class="step-label">Select Frame</div>
+    </div>
+    <div class="step-line" id="line-2"></div>
+    <div class="step" id="step-3">
+      <div class="step-num">3</div>
+      <div class="step-label">Export</div>
+    </div>
+  </div>
+
+  <!-- ── STEP 1: CONNECT ── -->
+  <div id="panel-connect">
+    <div class="card">
+      <div class="card-header">
+        <span class="material-symbols-outlined">key</span>
+        <div>
+          <h2>Connect to Figma</h2>
+          <p>Your token stays in-browser and is never stored or sent to any server</p>
+        </div>
+      </div>
+      <div class="card-body">
+
+        <div class="info-box">
+          <span class="material-symbols-outlined">info</span>
+          <p>
+            <strong>How to get your token:</strong> In Figma, go to <strong>Account Settings → Personal access tokens → Generate new token</strong>.
+            Give it <em>File content</em> read access.
+            <a href="https://help.figma.com/hc/en-us/articles/8085703771159-Manage-personal-access-tokens" target="_blank">View guide ↗</a>
+          </p>
+        </div>
+
+        <div class="field">
+          <label>Personal Access Token</label>
+          <div class="field-wrap">
+            <span class="material-symbols-outlined">token</span>
+            <input type="password" id="pat-input" placeholder="figd_••••••••••••••••••••••••••••••••" autocomplete="off">
+            <button class="pat-toggle" onclick="togglePAT()" title="Show/hide token">
+              <span class="material-symbols-outlined" id="pat-eye-icon">visibility</span>
+            </button>
+          </div>
+          <p class="field-hint">Stored only in memory — clears when you close this tab.</p>
+        </div>
+
+        <div class="field">
+          <label>Figma File or Frame URL</label>
+          <div class="field-wrap">
+            <span class="material-symbols-outlined">link</span>
+            <input type="text" id="url-input" placeholder="https://www.figma.com/design/XXXX/My-Form?node-id=…">
+          </div>
+          <p class="field-hint">
+            Paste a file URL <em>or</em> right-click any frame in Figma → <strong>Copy link to selection</strong> to target a specific frame.
+          </p>
+        </div>
+
+        <div id="connect-error" class="error-box hidden">
+          <span class="material-symbols-outlined">error</span>
+          <p id="connect-error-msg"></p>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary btn-lg" onclick="connectFigma()">
+            <span class="material-symbols-outlined">play_arrow</span>
+            Connect & Fetch File
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STEP 2: SELECT FRAME ── -->
+  <div id="panel-frames" class="hidden">
+    <div class="card">
+      <div class="card-header">
+        <span class="material-symbols-outlined">dashboard</span>
+        <div>
+          <h2 id="frames-file-name">Choose a Frame</h2>
+          <p id="frames-file-meta">Select which frame to export as Illustrator file</p>
+        </div>
+      </div>
+      <div class="card-body">
+
+        <div id="frames-loading" class="loading">
+          <div class="spinner"></div>
+          <p>Fetching file structure…</p>
+        </div>
+
+        <div id="frames-content" class="hidden">
+
+          <div class="field">
+            <label>Page</label>
+            <div class="select-wrap">
+              <span class="material-symbols-outlined">article</span>
+              <select id="page-select" onchange="onPageChange()"></select>
+              <span class="material-symbols-outlined select-arrow">expand_more</span>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Top-Level Frames</div>
+            <div class="frames-grid" id="frames-grid"></div>
+          </div>
+
+          <div id="frames-error" class="error-box hidden" style="margin-top:16px">
+            <span class="material-symbols-outlined">error</span>
+            <p id="frames-error-msg"></p>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="btn-row">
+            <button class="btn btn-outlined" onclick="goBack()">
+              <span class="material-symbols-outlined">arrow_back</span>
+              Back
+            </button>
+            <button class="btn btn-primary btn-lg" id="export-btn" onclick="exportFrame()" disabled>
+              <span class="material-symbols-outlined">download</span>
+              Export Selected Frame
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STEP 3: EXPORT ── -->
+  <div id="panel-export" class="hidden">
+    <div class="card">
+      <div class="card-header">
+        <span class="material-symbols-outlined">file_download</span>
+        <div>
+          <h2>Export Ready</h2>
+          <p>Your Figma frame has been fetched as a native vector SVG</p>
+        </div>
+      </div>
+      <div class="card-body">
+
+        <div id="export-loading" class="loading hidden">
+          <div class="spinner"></div>
+          <p id="export-loading-msg">Exporting from Figma servers…</p>
+        </div>
+
+        <div id="export-content" class="hidden">
+
+          <div class="success-banner">
+            <span class="material-symbols-outlined">check_circle</span>
+            <p>Vector SVG successfully fetched from Figma. Ready to open in Illustrator.</p>
+          </div>
+
+          <div class="section-title">Preview</div>
+          <div class="preview-area" id="preview-area">
+            <span class="material-symbols-outlined" style="font-size:48px;color:var(--md-outline)">image</span>
+          </div>
+
+          <div class="output-meta" id="output-meta"></div>
+
+          <div class="section-title">Download</div>
+          <div class="download-row">
+            <a class="download-btn" id="dl-svg" href="#" download>
+              <span class="download-btn-label">Vector File</span>
+              <span class="download-btn-type">.SVG</span>
+              <span class="download-btn-desc">Opens in Illustrator natively</span>
+            </a>
+            <a class="download-btn" id="dl-ai" href="#" download>
+              <span class="download-btn-label">Illustrator</span>
+              <span class="download-btn-type">.AI</span>
+              <span class="download-btn-desc">Direct Adobe AI format</span>
+            </a>
+          </div>
+
+          <div class="info-box" style="margin-top:20px">
+            <span class="material-symbols-outlined">tips_and_updates</span>
+            <p>
+              <strong>In Illustrator:</strong> File → Open → select the downloaded file.
+              All layers, shapes, and text will be fully editable.
+              If prompted about units, choose <strong>px</strong>.
+            </p>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="btn-row">
+            <button class="btn btn-outlined" onclick="goToFrames()">
+              <span class="material-symbols-outlined">arrow_back</span>
+              Export Another Frame
+            </button>
+            <button class="btn btn-text" onclick="reset()">Start Over</button>
+          </div>
+
+        </div>
+
+        <div id="export-error" class="error-box hidden">
+          <span class="material-symbols-outlined">error</span>
+          <p id="export-error-msg"></p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ── STATE ──
+const state = {
+  pat: '',
+  fileKey: '',
+  fileName: '',
+  fileData: null,
+  pages: [],
+  currentPage: null,
+  selectedFrame: null,
+  svgContent: null,
+};
+
+// ── UTILS ──
+function parseFigmaUrl(url) {
+  // Supports /file/ and /design/ formats
+  const m = url.match(/figma\.com\/(?:file|design)\/([a-zA-Z0-9]+)/);
+  if (!m) return null;
+  const fileKey = m[1];
+  // Try to extract node-id
+  const nodeMatch = url.match(/node-id=([^&]+)/);
+  const nodeId = nodeMatch ? decodeURIComponent(nodeMatch[1]) : null;
+  return { fileKey, nodeId };
+}
+
+function goStep(n) {
+  [1,2,3].forEach(i => {
+    const s = document.getElementById(`step-${i}`);
+    s.classList.remove('active','done');
+    if (i < n) { s.classList.add('done'); s.querySelector('.step-num').textContent = '✓'; }
+    else if (i === n) s.classList.add('active');
+    else s.querySelector('.step-num').textContent = i;
+  });
+  [1,2].forEach(i => {
+    const l = document.getElementById(`line-${i}`);
+    l.classList.toggle('done', i < n);
+  });
+}
+
+function showPanel(id) {
+  ['panel-connect','panel-frames','panel-export'].forEach(p => {
+    document.getElementById(p).classList.add('hidden');
+  });
+  document.getElementById(id).classList.remove('hidden');
+}
+
+function showError(boxId, msgId, msg) {
+  const box = document.getElementById(boxId);
+  box.classList.remove('hidden');
+  document.getElementById(msgId).textContent = msg;
+}
+function hideError(boxId) {
+  document.getElementById(boxId).classList.add('hidden');
+}
+
+// ── PAT TOGGLE ──
+function togglePAT() {
+  const input = document.getElementById('pat-input');
+  const icon = document.getElementById('pat-eye-icon');
+  if (input.type === 'password') {
+    input.type = 'text'; icon.textContent = 'visibility_off';
+  } else {
+    input.type = 'password'; icon.textContent = 'visibility';
+  }
+}
+
+// ── STEP 1: CONNECT ──
+async function connectFigma() {
+  hideError('connect-error');
+  const pat = document.getElementById('pat-input').value.trim();
+  const url = document.getElementById('url-input').value.trim();
+  if (!pat) return showError('connect-error','connect-error-msg','Please enter your Personal Access Token.');
+  if (!url) return showError('connect-error','connect-error-msg','Please enter your Figma file URL.');
+  const parsed = parseFigmaUrl(url);
+  if (!parsed) return showError('connect-error','connect-error-msg','Could not parse Figma URL. Make sure it contains /file/ or /design/ and a file key.');
+
+  state.pat = pat;
+  state.fileKey = parsed.fileKey;
+  state.hintNodeId = parsed.nodeId;
+
+  goStep(2);
+  showPanel('panel-frames');
+  document.getElementById('frames-loading').classList.remove('hidden');
+  document.getElementById('frames-content').classList.add('hidden');
+  hideError('frames-error');
+
+  try {
+    const res = await fetch(`https://api.figma.com/v1/files/${state.fileKey}?depth=1`, {
+      headers: { 'X-Figma-Token': state.pat }
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || `API error ${res.status}. Check your token and file URL.`);
+    }
+    const data = await res.json();
+    state.fileData = data;
+    state.fileName = data.name;
+    state.pages = data.document.children; // pages
+
+    document.getElementById('frames-file-name').textContent = data.name;
+    document.getElementById('frames-file-meta').textContent =
+      `${state.pages.length} page${state.pages.length !== 1 ? 's' : ''} · Last modified ${new Date(data.lastModified).toLocaleDateString()}`;
+
+    // Populate page select
+    const sel = document.getElementById('page-select');
+    sel.innerHTML = '';
+    state.pages.forEach((page, i) => {
+      const opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = page.name;
+      sel.appendChild(opt);
+    });
+
+    // If URL had a node-id, try to find its page
+    if (state.hintNodeId) {
+      const nodeFileId = state.hintNodeId.split(':')[0];
+      const pageIdx = state.pages.findIndex(p =>
+        p.children && p.children.some(c => c.id === state.hintNodeId || c.id.split(':')[0] === nodeFileId)
+      );
+      if (pageIdx >= 0) sel.value = pageIdx;
+    }
+
+    document.getElementById('frames-loading').classList.add('hidden');
+    document.getElementById('frames-content').classList.remove('hidden');
+    renderFrames();
+
+  } catch (e) {
+    document.getElementById('frames-loading').classList.add('hidden');
+    document.getElementById('frames-content').classList.remove('hidden');
+    showError('frames-error','frames-error-msg', e.message || 'Failed to connect to Figma. Check your token and try again.');
+  }
+}
+
+// ── PAGE CHANGE ──
+function onPageChange() { renderFrames(); }
+
+function renderFrames() {
+  state.selectedFrame = null;
+  document.getElementById('export-btn').disabled = true;
+
+  const sel = document.getElementById('page-select');
+  const pageIdx = parseInt(sel.value);
+  state.currentPage = state.pages[pageIdx];
+
+  const grid = document.getElementById('frames-grid');
+  grid.innerHTML = '';
+
+  const frames = (state.currentPage.children || []).filter(n =>
+    n.type === 'FRAME' || n.type === 'COMPONENT' || n.type === 'GROUP' || n.type === 'SECTION'
+  );
+
+  if (frames.length === 0) {
+    grid.innerHTML = `<div style="grid-column:1/-1;color:var(--md-on-surface-variant);font-size:13px;padding:16px 0">
+      No frames found on this page. Try another page.
+    </div>`;
+    return;
+  }
+
+  // Fetch thumbnails
+  const ids = frames.map(f => encodeURIComponent(f.id)).join(',');
+  fetch(`https://api.figma.com/v1/images/${state.fileKey}?ids=${ids}&format=png&scale=0.5`, {
+    headers: { 'X-Figma-Token': state.pat }
+  }).then(r => r.json()).then(data => {
+    frames.forEach(f => {
+      const url = data.images && data.images[f.id];
+      const thumb = document.getElementById(`thumb-${CSS.escape(f.id)}`);
+      if (thumb && url) {
+        thumb.innerHTML = `<img src="${url}" alt="${f.name}" loading="lazy">`;
+      }
+    });
+  }).catch(() => {/* thumbnails are optional */});
+
+  frames.forEach(frame => {
+    const w = frame.absoluteBoundingBox ? Math.round(frame.absoluteBoundingBox.width) : '?';
+    const h = frame.absoluteBoundingBox ? Math.round(frame.absoluteBoundingBox.height) : '?';
+    const card = document.createElement('div');
+    card.className = 'frame-card';
+    card.dataset.id = frame.id;
+    card.innerHTML = `
+      <div class="frame-thumb" id="thumb-${frame.id}">
+        <span class="material-symbols-outlined">dashboard</span>
+      </div>
+      <div class="frame-name">${frame.name}</div>
+      <div class="frame-size">${w} × ${h} px</div>
+    `;
+    card.onclick = () => selectFrame(frame, card);
+
+    // Pre-select if URL hinted this node
+    if (state.hintNodeId && frame.id === state.hintNodeId) {
+      setTimeout(() => selectFrame(frame, card), 100);
+    }
+    grid.appendChild(card);
+  });
+}
+
+function selectFrame(frame, card) {
+  document.querySelectorAll('.frame-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  state.selectedFrame = frame;
+  document.getElementById('export-btn').disabled = false;
+}
+
+// ── STEP 3: EXPORT ──
+async function exportFrame() {
+  if (!state.selectedFrame) return;
+  goStep(3);
+  showPanel('panel-export');
+
+  const loadEl = document.getElementById('export-loading');
+  const contentEl = document.getElementById('export-content');
+  const errEl = document.getElementById('export-error');
+  loadEl.classList.remove('hidden');
+  contentEl.classList.add('hidden');
+  errEl.classList.add('hidden');
+
+  try {
+    const nodeId = encodeURIComponent(state.selectedFrame.id);
+
+    // 1. Get Figma-rendered SVG URL
+    document.getElementById('export-loading-msg').textContent = 'Requesting SVG export from Figma…';
+    const imgRes = await fetch(
+      `https://api.figma.com/v1/images/${state.fileKey}?ids=${nodeId}&format=svg&svg_include_id=true&svg_simplify_stroke=true`,
+      { headers: { 'X-Figma-Token': state.pat } }
+    );
+    if (!imgRes.ok) throw new Error(`Export API error: ${imgRes.status}`);
+    const imgData = await imgRes.json();
+    const svgUrl = imgData.images && imgData.images[state.selectedFrame.id];
+    if (!svgUrl) throw new Error('Figma did not return an SVG URL. The frame may be empty.');
+
+    // 2. Fetch the actual SVG content
+    document.getElementById('export-loading-msg').textContent = 'Downloading vector SVG…';
+    const svgRes = await fetch(svgUrl);
+    if (!svgRes.ok) throw new Error('Could not download the SVG from Figma CDN.');
+    let svgText = await svgRes.text();
+
+    state.svgContent = svgText;
+
+    // 3. Show preview
+    document.getElementById('preview-area').innerHTML = svgText;
+    // Scale the preview SVG to fit
+    const previewSvg = document.querySelector('#preview-area svg');
+    if (previewSvg) {
+      previewSvg.style.maxWidth = '100%';
+      previewSvg.style.maxHeight = '480px';
+      previewSvg.style.height = 'auto';
+    }
+
+    // 4. Output meta
+    const w = state.selectedFrame.absoluteBoundingBox ? Math.round(state.selectedFrame.absoluteBoundingBox.width) : '?';
+    const h = state.selectedFrame.absoluteBoundingBox ? Math.round(state.selectedFrame.absoluteBoundingBox.height) : '?';
+    const bytes = new Blob([svgText]).size;
+    const kb = (bytes / 1024).toFixed(1);
+
+    document.getElementById('output-meta').innerHTML = `
+      <span class="chip"><span class="material-symbols-outlined">straighten</span>${w} × ${h} px</span>
+      <span class="chip"><span class="material-symbols-outlined">file_present</span>${kb} KB</span>
+      <span class="chip"><span class="material-symbols-outlined">layers</span>${state.selectedFrame.name}</span>
+      <span class="chip"><span class="material-symbols-outlined">check</span>Editable Vector</span>
+    `;
+
+    // 5. SVG download
+    const svgBlob = new Blob([svgText], { type: 'image/svg+xml;charset=utf-8' });
+    const svgObjUrl = URL.createObjectURL(svgBlob);
+    const dlSvg = document.getElementById('dl-svg');
+    dlSvg.href = svgObjUrl;
+    dlSvg.download = `${state.selectedFrame.name.replace(/[^a-z0-9_\-]/gi,'_')}.svg`;
+
+    // 6. AI download — wrap SVG in Adobe Illustrator-compatible envelope
+    const aiContent = buildAIFile(svgText, state.selectedFrame.name, w, h);
+    const aiBlob = new Blob([aiContent], { type: 'application/postscript' });
+    const aiObjUrl = URL.createObjectURL(aiBlob);
+    const dlAi = document.getElementById('dl-ai');
+    dlAi.href = aiObjUrl;
+    dlAi.download = `${state.selectedFrame.name.replace(/[^a-z0-9_\-]/gi,'_')}.ai`;
+
+    loadEl.classList.add('hidden');
+    contentEl.classList.remove('hidden');
+
+  } catch (e) {
+    loadEl.classList.add('hidden');
+    errEl.classList.remove('hidden');
+    document.getElementById('export-error-msg').textContent = e.message || 'Export failed. Please try again.';
+  }
+}
+
+// ── AI FILE BUILDER ──
+// Wraps SVG in a PostScript envelope that Illustrator CS3+ recognizes
+function buildAIFile(svgContent, name, width, height) {
+  const w = parseFloat(width) || 800;
+  const h = parseFloat(height) || 600;
+  // Convert px to points (1px = 0.75pt)
+  const wPt = (w * 0.75).toFixed(3);
+  const hPt = (h * 0.75).toFixed(3);
+  const date = new Date().toISOString();
+
+  // Encode SVG as base64 for embedding
+  const b64svg = btoa(unescape(encodeURIComponent(svgContent)));
+
+  return `%!PS-Adobe-3.0
+%%Creator: Figma → Illustrator Converter
+%%Title: (${name})
+%%CreationDate: (${date})
+%%DocumentData: Clean7Bit
+%%LanguageLevel: 2
+%%Pages: 1
+%%DocumentProcessColors: Black
+%%BoundingBox: 0 0 ${Math.ceil(wPt)} ${Math.ceil(hPt)}
+%%HiResBoundingBox: 0.000 0.000 ${wPt} ${hPt}
+%AI7_Thumbnail: 128 128 8
+%%AI8_CreatorVersion: 16.0.0
+%AI9_PrintingDataBegin
+%AI9_Flatten: 1
+%AI9_PrintingDataEnd
+%%AI12_DocumentVersion: 1
+%%AI14_InkNames:
+%%EndComments
+%%BeginProlog
+%%EndProlog
+%%BeginSetup
+%%EndSetup
+%%Page: 1 1
+%%BeginPageSetup
+%%PageBoundingBox: 0 0 ${Math.ceil(wPt)} ${Math.ceil(hPt)}
+%%EndPageSetup
+%AI7_BeginLayer
+1 1 1 1 0 0 0 0 128 255 0 0 0 0 0 0
+(Layer 1) XV
+%AI7_EndLayer--
+%%PageTrailer
+%%Trailer
+%%EOF
+%AI9_PrivateDataBegin
+%AI9_PrivateData: ${b64svg}
+%AI9_PrivateDataEnd
+%AI9_DocumentType: SVGWrapper
+<!-- Illustrator SVG Embed -->
+${svgContent}
+`;
+}
+
+// ── NAVIGATION ──
+function goBack() {
+  goStep(1);
+  showPanel('panel-connect');
+}
+
+function goToFrames() {
+  goStep(2);
+  showPanel('panel-frames');
+  state.selectedFrame = null;
+  document.getElementById('export-btn').disabled = true;
+  document.querySelectorAll('.frame-card').forEach(c => c.classList.remove('selected'));
+}
+
+function reset() {
+  state.pat = '';
+  state.fileKey = '';
+  state.fileName = '';
+  state.fileData = null;
+  state.pages = [];
+  state.currentPage = null;
+  state.selectedFrame = null;
+  state.svgContent = null;
+  document.getElementById('pat-input').value = '';
+  document.getElementById('url-input').value = '';
+  goStep(1);
+  showPanel('panel-connect');
+}
+
+// ── ENTER KEY ──
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    const panel = document.getElementById('panel-connect');
+    if (!panel.classList.contains('hidden')) connectFigma();
+  }
+});
+</script>
+</body>
+</html>
