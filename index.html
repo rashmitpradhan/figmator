@@ -3,9 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Figma → Illustrator</title>
+<title>Figmator</title>
 <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600&family=Google+Sans+Display:wght@400;500;700&family=Google+Sans+Mono&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
   :root {
     --md-primary: #1A73E8;
@@ -26,65 +27,67 @@
     --md-success-container: #E6F4EA;
     --md-shadow: 0 1px 3px rgba(60,64,67,.15), 0 2px 6px rgba(60,64,67,.1);
     --md-shadow-2: 0 4px 12px rgba(60,64,67,.15), 0 1px 3px rgba(60,64,67,.1);
-    --md-radius-sm: 8px;
-    --md-radius-md: 12px;
-    --md-radius-lg: 16px;
-    --md-radius-xl: 24px;
-    --md-radius-full: 50px;
+    --md-radius-sm: 8px; --md-radius-md: 12px;
+    --md-radius-lg: 16px; --md-radius-xl: 24px; --md-radius-full: 50px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Google Sans', sans-serif; background: var(--md-surface); color: var(--md-on-surface); min-height: 100vh; display: flex; flex-direction: column; }
 
-  /* TOP BAR */
+  /* ── TOP BAR ── */
   .topbar { background: var(--md-surface-1); border-bottom: 1px solid var(--md-outline); padding: 0 24px; height: 64px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 200; }
   .logo-icon { width: 36px; height: 36px; background: var(--md-primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; }
   .logo-icon .material-symbols-outlined { font-size: 18px; }
-  .topbar h1 { font-family: 'Google Sans Display', sans-serif; font-size: 20px; font-weight: 600; letter-spacing: -0.3px; }
-  .topbar h1 span { color: var(--md-primary); }
+  .topbar h1 { font-family: 'Google Sans Display', sans-serif; font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+  .topbar h1 .accent { color: var(--md-primary); }
   .topbar-spacer { flex: 1; }
-  .badge { background: var(--md-primary-container); color: var(--md-on-primary-container); font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: var(--md-radius-full); letter-spacing: 0.3px; }
   .topbar-guide-btn { display: flex; align-items: center; gap: 6px; background: none; border: 1.5px solid var(--md-outline); border-radius: var(--md-radius-full); padding: 0 14px; height: 36px; font-family: 'Google Sans', sans-serif; font-size: 13px; font-weight: 600; color: var(--md-primary); cursor: pointer; transition: all .2s; }
   .topbar-guide-btn:hover { background: var(--md-primary-container); border-color: var(--md-primary); }
   .topbar-guide-btn .material-symbols-outlined { font-size: 16px; }
 
-  /* GUIDE DRAWER */
-  .guide-overlay { position: fixed; inset: 0; background: rgba(32,33,36,.4); z-index: 300; opacity: 0; pointer-events: none; transition: opacity .25s; }
+  /* ── GUIDE DRAWER ── */
+  .guide-overlay { position: fixed; inset: 0; background: rgba(32,33,36,.45); z-index: 300; opacity: 0; pointer-events: none; transition: opacity .25s; }
   .guide-overlay.open { opacity: 1; pointer-events: all; }
-  .guide-drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(480px, 100vw); background: var(--md-surface-1); z-index: 400; overflow-y: auto; transform: translateX(100%); transition: transform .3s cubic-bezier(.4,0,.2,1); display: flex; flex-direction: column; }
+  .guide-drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(460px,100vw); background: var(--md-surface-1); z-index: 400; overflow-y: auto; transform: translateX(100%); transition: transform .3s cubic-bezier(.4,0,.2,1); display: flex; flex-direction: column; box-shadow: -4px 0 24px rgba(60,64,67,.15); }
   .guide-drawer.open { transform: translateX(0); }
   .guide-drawer-header { display: flex; align-items: center; gap: 10px; padding: 20px 24px; border-bottom: 1px solid var(--md-outline); position: sticky; top: 0; background: var(--md-surface-1); z-index: 1; }
   .guide-drawer-header h2 { font-size: 17px; font-weight: 600; flex: 1; }
   .icon-btn { width: 36px; height: 36px; border-radius: 50%; border: none; background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--md-on-surface-variant); transition: background .15s; }
   .icon-btn:hover { background: var(--md-surface-2); }
   .icon-btn .material-symbols-outlined { font-size: 20px; }
-  .guide-body { padding: 24px; flex: 1; }
-  .guide-section { margin-bottom: 32px; }
-  .guide-section:last-child { margin-bottom: 0; }
-  .guide-section-title { font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--md-on-surface-variant); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .guide-body { padding: 24px; flex: 1; display: flex; flex-direction: column; gap: 24px; }
+
+  .guide-section-title { font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--md-on-surface-variant); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
   .guide-section-title::after { content: ''; flex: 1; height: 1px; background: var(--md-outline); }
-  .guide-step { display: flex; gap: 14px; margin-bottom: 20px; }
-  .guide-step:last-child { margin-bottom: 0; }
-  .guide-step-num { width: 28px; height: 28px; flex-shrink: 0; background: var(--md-primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; margin-top: 1px; }
-  .guide-step-content h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
-  .guide-step-content p { font-size: 13px; color: var(--md-on-surface-variant); line-height: 1.6; }
-  .guide-step-content p strong { color: var(--md-on-surface); font-weight: 600; }
-  .guide-step-content p code { background: var(--md-surface-2); border-radius: 4px; padding: 1px 6px; font-family: 'Google Sans Mono', monospace; font-size: 12px; }
-  .guide-img-placeholder { background: var(--md-surface-2); border-radius: var(--md-radius-md); border: 1px dashed var(--md-outline); padding: 14px; margin-top: 10px; }
-  .nav-path { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-  .nav-crumb { background: var(--md-surface-1); border: 1px solid var(--md-outline); border-radius: 6px; padding: 3px 10px; font-size: 12px; font-weight: 500; color: var(--md-on-surface); white-space: nowrap; }
-  .nav-crumb.hi { background: var(--md-primary-container); border-color: var(--md-primary); color: var(--md-on-primary-container); }
-  .nav-arrow { color: var(--md-on-surface-variant); font-size: 14px; }
-  .url-example { background: var(--md-surface-2); border-radius: var(--md-radius-md); border: 1px solid var(--md-outline); padding: 12px 14px; margin-top: 10px; font-family: 'Google Sans Mono', monospace; font-size: 11px; color: var(--md-on-surface-variant); line-height: 1.7; word-break: break-all; }
-  .url-example .uk { color: var(--md-primary); font-weight: 600; }
-  .tip-box { background: #FEF9C3; border-radius: var(--md-radius-md); padding: 12px 14px; margin-top: 10px; display: flex; gap: 8px; align-items: flex-start; }
+
+  .guide-link-item { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; border: 1.5px solid var(--md-outline); border-radius: var(--md-radius-lg); text-decoration: none; color: inherit; transition: all .18s; margin-bottom: 10px; }
+  .guide-link-item:last-child { margin-bottom: 0; }
+  .guide-link-item:hover { border-color: var(--md-primary); background: var(--md-primary-container); }
+  .guide-link-icon { width: 36px; height: 36px; background: var(--md-primary-container); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .guide-link-icon .material-symbols-outlined { font-size: 18px; color: var(--md-primary); }
+  .guide-link-content h4 { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+  .guide-link-content p { font-size: 12px; color: var(--md-on-surface-variant); line-height: 1.5; }
+  .guide-link-arrow { margin-left: auto; color: var(--md-on-surface-variant); flex-shrink: 0; align-self: center; }
+  .guide-link-arrow .material-symbols-outlined { font-size: 18px; }
+
+  .guide-inline-step { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--md-outline); }
+  .guide-inline-step:last-child { border-bottom: none; }
+  .step-badge { background: var(--md-primary); color: white; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+  .guide-inline-step p { font-size: 13px; color: var(--md-on-surface-variant); line-height: 1.6; }
+  .guide-inline-step p strong { color: var(--md-on-surface); font-weight: 600; }
+  .guide-inline-step p code { background: var(--md-surface-2); border-radius: 4px; padding: 1px 5px; font-family: 'Google Sans Mono', monospace; font-size: 11.5px; }
+
+  .tip-box { background: #FEF9C3; border-radius: var(--md-radius-md); padding: 12px 14px; display: flex; gap: 8px; align-items: flex-start; }
   .tip-box .material-symbols-outlined { color: #CA8A04; font-size: 16px; flex-shrink: 0; margin-top: 1px; }
   .tip-box p { font-size: 12px; color: #713F12; line-height: 1.55; }
-  .guide-divider { height: 1px; background: var(--md-outline); margin: 24px 0; }
 
-  /* MAIN */
+  .privacy-box { background: var(--md-success-container); border-radius: var(--md-radius-md); padding: 12px 14px; display: flex; gap: 8px; align-items: flex-start; }
+  .privacy-box .material-symbols-outlined { color: var(--md-success); font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .privacy-box p { font-size: 12px; color: #0D5C2E; line-height: 1.55; }
+
+  /* ── MAIN ── */
   .main { flex: 1; max-width: 900px; margin: 0 auto; padding: 32px 24px 64px; width: 100%; }
 
-  /* STEPS */
+  /* ── STEPS ── */
   .steps { display: flex; align-items: center; margin-bottom: 32px; }
   .step { display: flex; align-items: center; gap: 8px; flex: 1; }
   .step-num { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--md-outline); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: var(--md-on-surface-variant); background: var(--md-surface-1); flex-shrink: 0; transition: all .25s; }
@@ -96,7 +99,7 @@
   .step-line { flex: 1; height: 2px; background: var(--md-outline); margin: 0 4px; transition: background .3s; }
   .step-line.done { background: var(--md-success); }
 
-  /* CARD */
+  /* ── CARD ── */
   .card { background: var(--md-surface-1); border-radius: var(--md-radius-xl); border: 1px solid var(--md-outline); overflow: hidden; }
   .card-header { padding: 20px 24px 0; display: flex; align-items: flex-start; gap: 10px; }
   .card-header > .material-symbols-outlined { color: var(--md-primary); font-size: 22px; margin-top: 1px; }
@@ -104,20 +107,22 @@
   .card-header p { font-size: 13px; color: var(--md-on-surface-variant); margin-top: 2px; }
   .card-body { padding: 20px 24px 24px; }
 
-  /* FIELDS */
+  /* ── FIELDS ── */
   .field { margin-bottom: 16px; }
   .field label { display: block; font-size: 11px; font-weight: 700; color: var(--md-on-surface-variant); margin-bottom: 6px; letter-spacing: 0.5px; text-transform: uppercase; }
   .field-wrap { position: relative; }
   .field-wrap > .material-symbols-outlined { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 18px; color: var(--md-on-surface-variant); pointer-events: none; }
   input[type="text"], input[type="password"] { width: 100%; height: 48px; border: 1.5px solid var(--md-outline); border-radius: var(--md-radius-md); padding: 0 48px 0 44px; font-family: 'Google Sans', sans-serif; font-size: 14px; color: var(--md-on-surface); background: var(--md-surface-1); outline: none; transition: border-color .2s, box-shadow .2s; }
-  input[type="text"]:focus, input[type="password"]:focus { border-color: var(--md-primary); box-shadow: 0 0 0 3px rgba(26,115,232,.12); }
+  input:focus { border-color: var(--md-primary); box-shadow: 0 0 0 3px rgba(26,115,232,.12); }
   input[type="password"] { font-family: 'Google Sans Mono', monospace; letter-spacing: 3px; }
   .field-hint { font-size: 11.5px; color: var(--md-on-surface-variant); margin-top: 5px; line-height: 1.5; }
+  .field-hint a { color: var(--md-primary); text-decoration: none; }
+  .field-hint a:hover { text-decoration: underline; }
   .pat-toggle { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--md-on-surface-variant); display: flex; padding: 4px; border-radius: 50%; }
   .pat-toggle:hover { background: var(--md-surface-2); }
   .pat-toggle .material-symbols-outlined { font-size: 20px; }
 
-  /* BUTTONS */
+  /* ── BUTTONS ── */
   .btn { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 20px; border-radius: var(--md-radius-full); font-family: 'Google Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; border: none; outline: none; transition: all .2s; letter-spacing: 0.1px; text-decoration: none; }
   .btn .material-symbols-outlined { font-size: 18px; }
   .btn-primary { background: var(--md-primary); color: white; box-shadow: var(--md-shadow); }
@@ -131,11 +136,13 @@
   .btn-lg { height: 48px; padding: 0 28px; font-size: 15px; }
   .btn-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 
-  /* BOXES */
+  /* ── BOXES ── */
   .info-box { background: var(--md-primary-container); border-radius: var(--md-radius-md); padding: 12px 16px; display: flex; gap: 10px; margin-bottom: 20px; }
   .info-box .material-symbols-outlined { color: var(--md-primary); font-size: 18px; flex-shrink: 0; margin-top: 1px; }
   .info-box p { font-size: 13px; color: var(--md-on-primary-container); line-height: 1.6; }
   .info-box p strong { font-weight: 600; }
+  .info-box a { color: var(--md-primary); font-weight: 600; text-decoration: none; }
+  .info-box a:hover { text-decoration: underline; }
   .error-box { background: var(--md-error-container); border-radius: var(--md-radius-md); padding: 12px 16px; display: flex; gap: 10px; margin-bottom: 16px; }
   .error-box .material-symbols-outlined { color: var(--md-error); font-size: 18px; flex-shrink: 0; }
   .error-box p { font-size: 13px; color: #6B1111; line-height: 1.55; }
@@ -143,36 +150,67 @@
   .success-banner .material-symbols-outlined { color: var(--md-success); }
   .success-banner p { font-size: 13px; color: #0D5C2E; font-weight: 500; }
 
-  /* FRAMES GRID */
+  /* ── SELECTION BAR ── */
+  .selection-bar {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--md-primary-container);
+    border: 1.5px solid var(--md-primary);
+    border-radius: var(--md-radius-lg);
+    padding: 10px 16px;
+    margin-bottom: 16px;
+    transition: all .2s;
+  }
+  .selection-bar.empty { background: var(--md-surface-2); border-color: var(--md-outline); }
+  .selection-bar .material-symbols-outlined { color: var(--md-primary); font-size: 20px; }
+  .selection-bar.empty .material-symbols-outlined { color: var(--md-on-surface-variant); }
+  .sel-count { font-size: 13px; font-weight: 600; color: var(--md-on-primary-container); flex: 1; }
+  .selection-bar.empty .sel-count { color: var(--md-on-surface-variant); font-weight: 400; }
+  .sel-clear { background: none; border: none; cursor: pointer; color: var(--md-primary); font-family: 'Google Sans', sans-serif; font-size: 12px; font-weight: 600; padding: 4px 8px; border-radius: var(--md-radius-full); transition: background .15s; }
+  .sel-clear:hover { background: rgba(26,115,232,.12); }
+
+  /* ── FRAMES GRID ── */
   .frames-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-top: 4px; }
-  .frame-card { border: 2px solid var(--md-outline); border-radius: var(--md-radius-lg); padding: 12px; cursor: pointer; transition: all .2s; background: var(--md-surface); position: relative; }
+  .frame-card { border: 2px solid var(--md-outline); border-radius: var(--md-radius-lg); padding: 12px; cursor: pointer; transition: all .18s; background: var(--md-surface); position: relative; user-select: none; }
   .frame-card:hover { border-color: var(--md-primary); background: var(--md-primary-container); }
   .frame-card.selected { border-color: var(--md-primary); background: var(--md-primary-container); }
-  .frame-card.selected::after { content: 'check_circle'; font-family: 'Material Symbols Outlined'; position: absolute; top: 8px; right: 8px; color: var(--md-primary); font-size: 20px; }
+  .frame-check {
+    position: absolute; top: 8px; right: 8px;
+    width: 20px; height: 20px; border-radius: 50%;
+    border: 2px solid var(--md-outline);
+    background: var(--md-surface-1);
+    display: flex; align-items: center; justify-content: center;
+    transition: all .18s;
+    font-family: 'Material Symbols Outlined'; font-size: 12px;
+    color: transparent;
+  }
+  .frame-card.selected .frame-check { background: var(--md-primary); border-color: var(--md-primary); color: white; }
+  .frame-card.selected .frame-check::after { content: '✓'; font-family: 'Google Sans', sans-serif; font-size: 11px; font-weight: 700; }
   .frame-thumb { width: 100%; aspect-ratio: 4/3; background: var(--md-surface-2); border-radius: var(--md-radius-sm); margin-bottom: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
   .frame-thumb img { width: 100%; height: 100%; object-fit: contain; }
   .frame-thumb .material-symbols-outlined { font-size: 28px; color: var(--md-outline); }
-  .frame-name { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .frame-name { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 4px; }
   .frame-size { font-size: 11px; color: var(--md-on-surface-variant); margin-top: 2px; }
 
-  /* SELECT */
+  /* ── SELECT ── */
   .select-wrap { position: relative; }
   .select-wrap > .material-symbols-outlined { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 18px; color: var(--md-on-surface-variant); pointer-events: none; }
   .select-arrow { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 20px; color: var(--md-on-surface-variant); pointer-events: none; }
   select { width: 100%; height: 48px; border: 1.5px solid var(--md-outline); border-radius: var(--md-radius-md); padding: 0 40px 0 44px; font-family: 'Google Sans', sans-serif; font-size: 14px; color: var(--md-on-surface); background: var(--md-surface-1); appearance: none; outline: none; cursor: pointer; transition: border-color .2s; }
   select:focus { border-color: var(--md-primary); box-shadow: 0 0 0 3px rgba(26,115,232,.12); }
 
-  /* LOADING */
+  /* ── LOADING ── */
   .loading { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 40px 0; }
   .spinner { width: 40px; height: 40px; border: 3px solid var(--md-outline); border-top-color: var(--md-primary); border-radius: 50%; animation: spin .8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .loading p { font-size: 14px; color: var(--md-on-surface-variant); }
 
-  /* PREVIEW */
-  .preview-area { border: 1.5px dashed var(--md-outline); border-radius: var(--md-radius-lg); background: var(--md-surface-2); min-height: 200px; display: flex; align-items: center; justify-content: center; overflow: auto; padding: 16px; }
-  .preview-area svg { max-width: 100%; max-height: 480px; height: auto; }
+  /* ── PREVIEW ── */
+  .preview-area { border: 1.5px dashed var(--md-outline); border-radius: var(--md-radius-lg); background: var(--md-surface-2); min-height: 180px; display: flex; align-items: center; justify-content: center; overflow: auto; padding: 16px; gap: 16px; flex-wrap: wrap; }
+  .preview-thumb { background: white; border-radius: var(--md-radius-sm); padding: 8px; box-shadow: var(--md-shadow); max-width: 280px; }
+  .preview-thumb svg { max-width: 100%; max-height: 200px; height: auto; display: block; }
+  .preview-thumb-label { font-size: 11px; color: var(--md-on-surface-variant); text-align: center; margin-top: 6px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-  /* OUTPUT */
+  /* ── OUTPUT ── */
   .output-meta { display: flex; gap: 10px; flex-wrap: wrap; margin: 16px 0 20px; }
   .chip { display: inline-flex; align-items: center; gap: 5px; background: var(--md-secondary-container); color: var(--md-secondary); border-radius: var(--md-radius-full); padding: 5px 12px; font-size: 12px; font-weight: 500; }
   .chip .material-symbols-outlined { font-size: 14px; }
@@ -183,16 +221,16 @@
   .download-btn-type { font-size: 20px; font-weight: 700; color: var(--md-primary); letter-spacing: -0.5px; }
   .download-btn-desc { font-size: 11px; color: var(--md-on-surface-variant); }
 
-  /* MISC */
+  /* ── MISC ── */
   .divider { height: 1px; background: var(--md-outline); margin: 24px 0; }
-  .section { margin-top: 24px; }
+  .section { margin-top: 20px; }
   .section-title { font-size: 11px; font-weight: 700; color: var(--md-on-surface-variant); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 12px; }
   .hidden { display: none !important; }
 
   @media (max-width: 600px) {
     .main { padding: 20px 16px 48px; }
     .frames-grid { grid-template-columns: repeat(2, 1fr); }
-    .topbar h1 { font-size: 16px; }
+    .topbar h1 { font-size: 18px; }
     .topbar-guide-btn span:not(.material-symbols-outlined) { display: none; }
   }
 </style>
@@ -202,13 +240,12 @@
 <!-- TOP BAR -->
 <header class="topbar">
   <div class="logo-icon"><span class="material-symbols-outlined">architecture</span></div>
-  <h1>Figma <span>→</span> Illustrator</h1>
+  <h1>Fig<span class="accent">mator</span></h1>
   <div class="topbar-spacer"></div>
   <button class="topbar-guide-btn" onclick="openGuide()">
     <span class="material-symbols-outlined">menu_book</span>
     <span>How to use</span>
   </button>
-  <span class="badge">REST API</span>
 </header>
 
 <!-- GUIDE DRAWER -->
@@ -216,121 +253,82 @@
 <aside class="guide-drawer" id="guide-drawer">
   <div class="guide-drawer-header">
     <span class="material-symbols-outlined" style="color:var(--md-primary)">menu_book</span>
-    <h2>How to Use</h2>
+    <h2>How to Use Figmator</h2>
     <button class="icon-btn" onclick="closeGuide()"><span class="material-symbols-outlined">close</span></button>
   </div>
   <div class="guide-body">
 
-    <div class="guide-section">
-      <div class="guide-section-title">Step 1 — Get a Personal Access Token</div>
-      <div class="guide-step">
-        <div class="guide-step-num">1</div>
-        <div class="guide-step-content">
-          <h4>Open Figma Account Settings</h4>
-          <p>Click your <strong>avatar</strong> in the top-left of Figma, then choose <strong>Settings</strong>.</p>
-          <div class="guide-img-placeholder">
-            <div class="nav-path">
-              <span class="nav-crumb hi">Avatar / Name</span>
-              <span class="nav-arrow">›</span>
-              <span class="nav-crumb hi">Settings</span>
-            </div>
-          </div>
-        </div>
+    <!-- Step 1 -->
+    <div>
+      <div class="guide-section-title">Step 1 — Personal Access Token</div>
+      <div class="guide-inline-step">
+        <div class="step-badge">1</div>
+        <p>In Figma, click your <strong>avatar → Settings → Security → Personal access tokens</strong>.</p>
       </div>
-      <div class="guide-step">
-        <div class="guide-step-num">2</div>
-        <div class="guide-step-content">
-          <h4>Navigate to Personal Access Tokens</h4>
-          <p>In Settings, scroll to the <strong>Security</strong> section and click <strong>Personal access tokens</strong>.</p>
-          <div class="guide-img-placeholder">
-            <div class="nav-path">
-              <span class="nav-crumb">Settings</span>
-              <span class="nav-arrow">›</span>
-              <span class="nav-crumb">Security</span>
-              <span class="nav-arrow">›</span>
-              <span class="nav-crumb hi">Personal access tokens</span>
-            </div>
-          </div>
-        </div>
+      <div class="guide-inline-step">
+        <div class="step-badge">2</div>
+        <p>Click <strong>Generate new token</strong>. Name it anything. Under Scopes, enable <strong>File content → Read only</strong>.</p>
       </div>
-      <div class="guide-step">
-        <div class="guide-step-num">3</div>
-        <div class="guide-step-content">
-          <h4>Generate a new token</h4>
-          <p>Click <strong>Generate new token</strong>. Give it any name (e.g. <code>ai-export</code>). Under <strong>Scopes</strong>, enable <strong>File content → Read only</strong>. Copy the token immediately — it is only shown once.</p>
-          <div class="tip-box">
-            <span class="material-symbols-outlined">warning</span>
-            <p>Copy it before closing the dialog — Figma won't show the token again after you navigate away.</p>
-          </div>
+      <div class="guide-inline-step">
+        <div class="step-badge">3</div>
+        <p>Copy the token immediately — <strong>Figma only shows it once.</strong> Paste it into Figmator.</p>
+      </div>
+      <a class="guide-link-item" href="https://help.figma.com/hc/en-us/articles/8085703771159-Manage-personal-access-tokens" target="_blank" rel="noopener" style="margin-top:12px">
+        <div class="guide-link-icon"><span class="material-symbols-outlined">open_in_new</span></div>
+        <div class="guide-link-content">
+          <h4>Official Figma Guide — Personal Access Tokens</h4>
+          <p>Step-by-step on figma.com help center ↗</p>
         </div>
+      </a>
+    </div>
+
+    <!-- Step 2 -->
+    <div>
+      <div class="guide-section-title">Step 2 — Figma File URL</div>
+      <div class="guide-inline-step">
+        <div class="step-badge">A</div>
+        <p><strong>Whole file:</strong> Copy the URL from your browser's address bar while the file is open. Figmator will list all frames from any page.</p>
+      </div>
+      <div class="guide-inline-step">
+        <div class="step-badge">B</div>
+        <p><strong>Specific frame (recommended):</strong> Right-click any frame on the canvas → <strong>Copy/Paste as → Copy link to selection</strong>. Figmator will auto-select that frame.</p>
+      </div>
+      <a class="guide-link-item" href="https://help.figma.com/hc/en-us/articles/360040028114-Guide-to-Figma-s-API" target="_blank" rel="noopener">
+        <div class="guide-link-icon"><span class="material-symbols-outlined">api</span></div>
+        <div class="guide-link-content">
+          <h4>Figma REST API Overview</h4>
+          <p>Understanding file keys and node IDs ↗</p>
+        </div>
+      </a>
+    </div>
+
+    <!-- Step 3 -->
+    <div>
+      <div class="guide-section-title">Step 3 — Select Frames & Export</div>
+      <div class="guide-inline-step">
+        <div class="step-badge">1</div>
+        <p>After connecting, switch pages using the dropdown. <strong>Click frames to select them</strong> — you can select multiple at once.</p>
+      </div>
+      <div class="guide-inline-step">
+        <div class="step-badge">2</div>
+        <p><strong>Single frame:</strong> Downloads as <code>.svg</code> + <code>.ai</code>. <strong>Multiple frames:</strong> Downloads as a <code>.zip</code> containing all SVG files.</p>
+      </div>
+      <div class="guide-inline-step">
+        <div class="step-badge">3</div>
+        <p>In Illustrator: <strong>File → Open</strong> the downloaded file. All paths, shapes, and text are fully editable. If prompted about units, choose <strong>px</strong>.</p>
+      </div>
+      <div class="tip-box">
+        <span class="material-symbols-outlined">tips_and_updates</span>
+        <p><strong>.SVG is recommended</strong> — Illustrator treats it as a native format. The <code>.ai</code> wrapper is useful if your workflow requires an .ai file extension specifically.</p>
       </div>
     </div>
 
-    <div class="guide-divider"></div>
-
-    <div class="guide-section">
-      <div class="guide-section-title">Step 2 — Get Your Figma URL</div>
-      <div class="guide-step">
-        <div class="guide-step-num">A</div>
-        <div class="guide-step-content">
-          <h4>Whole file URL</h4>
-          <p>Copy the URL from your browser's address bar when the file is open. You'll pick a specific frame after connecting.</p>
-          <div class="url-example"><span class="uk">https://www.figma.com/design/AbCdEfGh1234</span>/My-Form-Design</div>
-        </div>
-      </div>
-      <div class="guide-step">
-        <div class="guide-step-num">B</div>
-        <div class="guide-step-content">
-          <h4>Link to a specific frame (recommended)</h4>
-          <p>In Figma, <strong>right-click any frame</strong> on the canvas → <strong>Copy/Paste as → Copy link to selection</strong>. This auto-selects that frame.</p>
-          <div class="guide-img-placeholder">
-            <div class="nav-path">
-              <span class="nav-crumb hi">Right-click frame</span>
-              <span class="nav-arrow">›</span>
-              <span class="nav-crumb">Copy/Paste as</span>
-              <span class="nav-arrow">›</span>
-              <span class="nav-crumb hi">Copy link to selection</span>
-            </div>
-          </div>
-          <div class="url-example" style="margin-top:10px"><span class="uk">https://www.figma.com/design/AbCdEfGh1234</span>/My-Form?<span class="uk">node-id=123-456</span></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="guide-divider"></div>
-
-    <div class="guide-section">
-      <div class="guide-section-title">Step 3 — Select Frame & Export</div>
-      <div class="guide-step">
-        <div class="guide-step-num">1</div>
-        <div class="guide-step-content">
-          <h4>Pick a page and frame</h4>
-          <p>After connecting, use the dropdown to switch pages. Click any frame card to select it. Thumbnail previews load automatically in the background.</p>
-        </div>
-      </div>
-      <div class="guide-step">
-        <div class="guide-step-num">2</div>
-        <div class="guide-step-content">
-          <h4>Download and open in Illustrator</h4>
-          <p>Download the <strong>.SVG</strong> or <strong>.AI</strong> file. In Illustrator: <strong>File → Open</strong>. All shapes and text will be fully editable. If prompted about units, choose <strong>px</strong>.</p>
-          <div class="tip-box">
-            <span class="material-symbols-outlined">tips_and_updates</span>
-            <p><strong>.SVG is recommended</strong> — Illustrator treats it as a native first-class format. The .AI wrapper is useful if your pipeline specifically requires an .ai extension.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="guide-divider"></div>
-
-    <div class="guide-section">
-      <div class="guide-section-title">Privacy & Security</div>
-      <div class="guide-step">
-        <div class="guide-step-num" style="background:var(--md-success);font-size:15px">✓</div>
-        <div class="guide-step-content">
-          <h4>Your token never leaves your browser</h4>
-          <p>All API requests go <strong>directly from your browser tab to <code>api.figma.com</code></strong>. No server is involved. The token is held only in memory and clears the moment you close or refresh this tab.</p>
-        </div>
+    <!-- Privacy -->
+    <div>
+      <div class="guide-section-title">Privacy</div>
+      <div class="privacy-box">
+        <span class="material-symbols-outlined">shield</span>
+        <p>Your token is held only in browser memory. All API calls go <strong>directly from your tab to api.figma.com</strong>. No server, no storage. Token clears on tab close.</p>
       </div>
     </div>
 
@@ -343,7 +341,7 @@
   <div class="steps">
     <div class="step active" id="step-1"><div class="step-num">1</div><div class="step-label">Connect</div></div>
     <div class="step-line" id="line-1"></div>
-    <div class="step" id="step-2"><div class="step-num">2</div><div class="step-label">Select Frame</div></div>
+    <div class="step" id="step-2"><div class="step-num">2</div><div class="step-label">Select Frames</div></div>
     <div class="step-line" id="line-2"></div>
     <div class="step" id="step-3"><div class="step-num">3</div><div class="step-label">Export</div></div>
   </div>
@@ -353,12 +351,12 @@
     <div class="card">
       <div class="card-header">
         <span class="material-symbols-outlined">key</span>
-        <div><h2>Connect to Figma</h2><p>Your token stays in-browser and is never stored or sent to any server</p></div>
+        <div><h2>Connect to Figma</h2><p>Your token stays in-browser only — never stored or transmitted to any server</p></div>
       </div>
       <div class="card-body">
         <div class="info-box">
           <span class="material-symbols-outlined">info</span>
-          <p>New here? Click <strong>How to use</strong> in the top bar for a full walkthrough on getting your token and URL.</p>
+          <p>Need help? Click <strong>How to use</strong> in the top bar, or read the <a href="https://help.figma.com/hc/en-us/articles/8085703771159-Manage-personal-access-tokens" target="_blank" rel="noopener">official Figma token guide ↗</a></p>
         </div>
         <div class="field">
           <label>Personal Access Token</label>
@@ -375,7 +373,7 @@
             <span class="material-symbols-outlined">link</span>
             <input type="text" id="url-input" placeholder="https://www.figma.com/design/XXXX/…">
           </div>
-          <p class="field-hint">Paste a file URL, or right-click any frame in Figma → Copy link to selection to target a specific frame.</p>
+          <p class="field-hint">Paste a file URL, or right-click any frame → Copy link to selection for a pre-selected frame.</p>
         </div>
         <div id="connect-error" class="error-box hidden">
           <span class="material-symbols-outlined">error</span><p id="connect-error-msg"></p>
@@ -397,7 +395,7 @@
     <div class="card">
       <div class="card-header">
         <span class="material-symbols-outlined">dashboard</span>
-        <div><h2 id="frames-file-name">Choose a Frame</h2><p id="frames-file-meta">Select which frame to export</p></div>
+        <div><h2 id="frames-file-name">Choose Frames</h2><p id="frames-file-meta">Click frames to select — multiple selection supported</p></div>
       </div>
       <div class="card-body">
         <div id="frames-loading" class="loading">
@@ -412,18 +410,27 @@
               <span class="material-symbols-outlined select-arrow">expand_more</span>
             </div>
           </div>
+
+          <!-- Selection bar -->
+          <div class="selection-bar empty" id="selection-bar">
+            <span class="material-symbols-outlined" id="sel-icon">check_box_outline_blank</span>
+            <span class="sel-count" id="sel-count-label">Click frames below to select them</span>
+            <button class="sel-clear hidden" id="sel-clear-btn" onclick="clearSelection()">Clear all</button>
+          </div>
+
           <div class="section">
             <div class="section-title">Top-Level Frames on This Page</div>
             <div class="frames-grid" id="frames-grid"></div>
           </div>
+
           <div id="frames-error" class="error-box hidden" style="margin-top:16px">
             <span class="material-symbols-outlined">error</span><p id="frames-error-msg"></p>
           </div>
           <div class="divider"></div>
           <div class="btn-row">
             <button class="btn btn-outlined" onclick="goBack()"><span class="material-symbols-outlined">arrow_back</span>Back</button>
-            <button class="btn btn-primary btn-lg" id="export-btn" onclick="exportFrame()" disabled>
-              <span class="material-symbols-outlined">download</span>Export Selected Frame
+            <button class="btn btn-primary btn-lg" id="export-btn" onclick="exportFrames()" disabled>
+              <span class="material-symbols-outlined">download</span><span id="export-btn-label">Export Selected</span>
             </button>
           </div>
         </div>
@@ -448,7 +455,7 @@
         <div id="export-content" class="hidden">
           <div class="success-banner">
             <span class="material-symbols-outlined">check_circle</span>
-            <p>Vector SVG fetched successfully. Fully editable in Adobe Illustrator.</p>
+            <p id="export-success-msg">Vector SVG fetched successfully. Fully editable in Adobe Illustrator.</p>
           </div>
           <div class="section-title">Preview</div>
           <div class="preview-area" id="preview-area">
@@ -456,25 +463,14 @@
           </div>
           <div class="output-meta" id="output-meta"></div>
           <div class="section-title">Download</div>
-          <div class="download-row">
-            <a class="download-btn" id="dl-svg" href="#" download>
-              <span class="download-btn-label">Vector File</span>
-              <span class="download-btn-type">.SVG</span>
-              <span class="download-btn-desc">Opens natively in Illustrator</span>
-            </a>
-            <a class="download-btn" id="dl-ai" href="#" download>
-              <span class="download-btn-label">Illustrator</span>
-              <span class="download-btn-type">.AI</span>
-              <span class="download-btn-desc">Adobe AI compatible format</span>
-            </a>
-          </div>
+          <div class="download-row" id="download-row"></div>
           <div class="info-box" style="margin-top:20px">
             <span class="material-symbols-outlined">tips_and_updates</span>
             <p><strong>In Illustrator:</strong> File → Open → select the downloaded file. All shapes and text are fully editable. If prompted about units, choose <strong>px</strong>.</p>
           </div>
           <div class="divider"></div>
           <div class="btn-row">
-            <button class="btn btn-outlined" onclick="goToFrames()"><span class="material-symbols-outlined">arrow_back</span>Export Another Frame</button>
+            <button class="btn btn-outlined" onclick="goToFrames()"><span class="material-symbols-outlined">arrow_back</span>Back to Frames</button>
             <button class="btn btn-text" onclick="reset()">Start Over</button>
           </div>
         </div>
@@ -485,233 +481,378 @@
 </main>
 
 <script>
-const state = { pat:'', fileKey:'', fileName:'', pages:[], currentPage:null, selectedFrame:null, svgContent:null, hintNodeId:null };
+// ── STATE ──
+const state = {
+  pat: '', fileKey: '', fileName: '',
+  pages: [], currentPage: null,
+  selectedFrames: new Map(), // id → frame object
+  exportedSvgs: [],          // [{name, svg}]
+  hintNodeId: null,
+};
 
+// ── GUIDE ──
 function openGuide() { document.getElementById('guide-drawer').classList.add('open'); document.getElementById('guide-overlay').classList.add('open'); document.body.style.overflow='hidden'; }
 function closeGuide() { document.getElementById('guide-drawer').classList.remove('open'); document.getElementById('guide-overlay').classList.remove('open'); document.body.style.overflow=''; }
 function togglePAT() { const i=document.getElementById('pat-input'),e=document.getElementById('pat-eye'); i.type=i.type==='password'?'text':'password'; e.textContent=i.type==='password'?'visibility':'visibility_off'; }
 
+// ── URL PARSER ──
 function parseFigmaUrl(url) {
   const m = url.match(/figma\.com\/(?:file|design)\/([a-zA-Z0-9]+)/);
   if (!m) return null;
   const nm = url.match(/node-id=([^&]+)/);
-  // Figma node IDs use colons internally but dashes in URLs
-  return { fileKey: m[1], nodeId: nm ? decodeURIComponent(nm[1]).replace(/-/g,':') : null };
+  // Figma URLs encode node IDs with dashes; API uses colons
+  const nodeId = nm ? decodeURIComponent(nm[1]).replace(/-/g, ':') : null;
+  return { fileKey: m[1], nodeId };
 }
 
+// ── STEP INDICATOR ──
 function goStep(n) {
   [1,2,3].forEach(i => {
-    const s=document.getElementById(`step-${i}`), num=s.querySelector('.step-num');
+    const s = document.getElementById(`step-${i}`), num = s.querySelector('.step-num');
     s.classList.remove('active','done');
-    if(i<n){s.classList.add('done');num.textContent='✓';}
-    else if(i===n){s.classList.add('active');num.textContent=i;}
-    else{num.textContent=i;}
+    if (i < n) { s.classList.add('done'); num.textContent = '✓'; }
+    else if (i === n) { s.classList.add('active'); num.textContent = i; }
+    else num.textContent = i;
   });
-  [1,2].forEach(i=>document.getElementById(`line-${i}`).classList.toggle('done',i<n));
+  [1,2].forEach(i => document.getElementById(`line-${i}`).classList.toggle('done', i < n));
 }
-function showPanel(id) { ['panel-connect','panel-frames','panel-export'].forEach(p=>document.getElementById(p).classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
-function showError(b,m,t){document.getElementById(b).classList.remove('hidden');document.getElementById(m).textContent=t;}
-function hideError(id){document.getElementById(id).classList.add('hidden');}
+function showPanel(id) {
+  ['panel-connect','panel-frames','panel-export'].forEach(p => document.getElementById(p).classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
+function showError(b,m,t) { document.getElementById(b).classList.remove('hidden'); document.getElementById(m).textContent = t; }
+function hideError(id) { document.getElementById(id).classList.add('hidden'); }
 
+// ── SELECTION ──
+function updateSelectionBar() {
+  const n = state.selectedFrames.size;
+  const bar = document.getElementById('selection-bar');
+  const icon = document.getElementById('sel-icon');
+  const label = document.getElementById('sel-count-label');
+  const clearBtn = document.getElementById('sel-clear-btn');
+  const exportBtn = document.getElementById('export-btn');
+  const exportLabel = document.getElementById('export-btn-label');
+
+  if (n === 0) {
+    bar.classList.add('empty');
+    icon.textContent = 'check_box_outline_blank';
+    label.textContent = 'Click frames below to select them';
+    clearBtn.classList.add('hidden');
+    exportBtn.disabled = true;
+    exportLabel.textContent = 'Export Selected';
+  } else {
+    bar.classList.remove('empty');
+    icon.textContent = 'check_box';
+    label.textContent = `${n} frame${n>1?'s':''} selected`;
+    clearBtn.classList.remove('hidden');
+    exportBtn.disabled = false;
+    exportLabel.textContent = n === 1 ? 'Export Frame' : `Export ${n} Frames as ZIP`;
+  }
+}
+
+function toggleFrame(frame, card) {
+  if (state.selectedFrames.has(frame.id)) {
+    state.selectedFrames.delete(frame.id);
+    card.classList.remove('selected');
+  } else {
+    state.selectedFrames.set(frame.id, frame);
+    card.classList.add('selected');
+  }
+  updateSelectionBar();
+}
+
+function clearSelection() {
+  state.selectedFrames.clear();
+  document.querySelectorAll('.frame-card').forEach(c => c.classList.remove('selected'));
+  updateSelectionBar();
+}
+
+// ── STEP 1: CONNECT ──
 async function connectFigma() {
   hideError('connect-error');
-  const pat=document.getElementById('pat-input').value.trim();
-  const url=document.getElementById('url-input').value.trim();
-  if(!pat) return showError('connect-error','connect-error-msg','Please enter your Personal Access Token.');
-  if(!url) return showError('connect-error','connect-error-msg','Please enter your Figma file URL.');
-  const parsed=parseFigmaUrl(url);
-  if(!parsed) return showError('connect-error','connect-error-msg','Could not parse Figma URL. It must contain /file/ or /design/ followed by the file key.');
+  const pat = document.getElementById('pat-input').value.trim();
+  const url = document.getElementById('url-input').value.trim();
+  if (!pat) return showError('connect-error','connect-error-msg','Please enter your Personal Access Token.');
+  if (!url) return showError('connect-error','connect-error-msg','Please enter your Figma file URL.');
+  const parsed = parseFigmaUrl(url);
+  if (!parsed) return showError('connect-error','connect-error-msg','Could not parse the Figma URL. It must contain /file/ or /design/ followed by the file key.');
 
-  state.pat=pat; state.fileKey=parsed.fileKey; state.hintNodeId=parsed.nodeId;
+  state.pat = parsed.fileKey ? pat : '';
+  state.pat = pat;
+  state.fileKey = parsed.fileKey;
+  state.hintNodeId = parsed.nodeId;
+  state.selectedFrames.clear();
+
   goStep(2); showPanel('panel-frames');
   document.getElementById('frames-loading').classList.remove('hidden');
   document.getElementById('frames-content').classList.add('hidden');
   hideError('frames-error');
-  document.getElementById('frames-loading-msg').textContent='Fetching file structure…';
+  document.getElementById('frames-loading-msg').textContent = 'Fetching file structure…';
 
   try {
-    // depth=2 gives us document node + its children (pages). No frame data yet — avoids huge payload.
-    const res=await fetch(`https://api.figma.com/v1/files/${state.fileKey}?depth=2`,{headers:{'X-Figma-Token':state.pat}});
-    if(!res.ok){
-      const err=await res.json().catch(()=>({}));
-      if(res.status===401||res.status===403) throw new Error('Invalid token or insufficient permissions. The token needs "File content: Read only" scope.');
-      if(res.status===404) throw new Error('File not found. Double-check the URL and that you have access to this Figma file.');
-      throw new Error(err.message||`Figma API error (${res.status}).`);
+    // depth=2 → document + pages. No frame data yet — keeps payload small.
+    const res = await fetch(`https://api.figma.com/v1/files/${state.fileKey}?depth=2`, {
+      headers: { 'X-Figma-Token': state.pat }
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      if (res.status === 401 || res.status === 403) throw new Error('Invalid token or insufficient permissions. Make sure the token has "File content: Read only" scope.');
+      if (res.status === 404) throw new Error('File not found. Check the URL and make sure you have access to this Figma file.');
+      throw new Error(err.message || `Figma API error (${res.status}).`);
     }
-    const data=await res.json();
-    state.fileName=data.name;
-    state.pages=data.document.children.filter(n=>n.type==='CANVAS');
+    const data = await res.json();
+    state.fileName = data.name;
+    state.pages = data.document.children.filter(n => n.type === 'CANVAS');
 
-    document.getElementById('frames-file-name').textContent=data.name;
-    document.getElementById('frames-file-meta').textContent=`${state.pages.length} page${state.pages.length!==1?'s':''} · Last modified ${new Date(data.lastModified).toLocaleDateString()}`;
+    document.getElementById('frames-file-name').textContent = data.name;
+    document.getElementById('frames-file-meta').textContent =
+      `${state.pages.length} page${state.pages.length !== 1 ? 's' : ''} · Last modified ${new Date(data.lastModified).toLocaleDateString()}`;
 
-    const sel=document.getElementById('page-select');
-    sel.innerHTML='';
-    state.pages.forEach(page=>{
-      const o=document.createElement('option');
-      o.value=page.id; o.textContent=page.name; sel.appendChild(o);
+    const sel = document.getElementById('page-select');
+    sel.innerHTML = '';
+    state.pages.forEach(page => {
+      const o = document.createElement('option');
+      o.value = page.id; o.textContent = page.name; sel.appendChild(o);
     });
 
     document.getElementById('frames-loading').classList.add('hidden');
     document.getElementById('frames-content').classList.remove('hidden');
+    updateSelectionBar();
     await loadPageFrames();
 
-  } catch(e) {
+  } catch (e) {
     document.getElementById('frames-loading').classList.add('hidden');
     document.getElementById('frames-content').classList.remove('hidden');
-    showError('frames-error','frames-error-msg',e.message||'Connection failed. Please try again.');
+    showError('frames-error', 'frames-error-msg', e.message || 'Connection failed. Please try again.');
   }
 }
 
+// ── PAGE CHANGE ──
 async function onPageChange() {
-  document.getElementById('frames-grid').innerHTML='';
-  state.selectedFrame=null;
-  document.getElementById('export-btn').disabled=true;
+  state.selectedFrames.clear();
+  updateSelectionBar();
   await loadPageFrames();
 }
 
+// ── LOAD FRAMES via /nodes endpoint (proper depth) ──
 async function loadPageFrames() {
   hideError('frames-error');
-  const pageId=document.getElementById('page-select').value;
-  if(!pageId) return;
+  const pageId = document.getElementById('page-select').value;
+  if (!pageId) return;
 
-  const grid=document.getElementById('frames-grid');
-  grid.innerHTML=`<div style="grid-column:1/-1;display:flex;align-items:center;gap:10px;padding:16px 0;color:var(--md-on-surface-variant);font-size:13px"><div class="spinner" style="width:24px;height:24px;border-width:2px"></div>Loading frames…</div>`;
+  const grid = document.getElementById('frames-grid');
+  grid.innerHTML = `<div style="grid-column:1/-1;display:flex;align-items:center;gap:10px;padding:16px 0;color:var(--md-on-surface-variant);font-size:13px">
+    <div class="spinner" style="width:24px;height:24px;border-width:2px"></div>Loading frames…</div>`;
 
   try {
-    // /nodes endpoint with depth=2: returns this page's node + its immediate children (top-level frames)
-    const res=await fetch(`https://api.figma.com/v1/files/${state.fileKey}/nodes?ids=${encodeURIComponent(pageId)}&depth=2`,{headers:{'X-Figma-Token':state.pat}});
-    if(!res.ok) throw new Error(`Could not fetch page nodes (${res.status}).`);
-    const data=await res.json();
+    // /nodes with depth=2 → page node + its immediate children (top-level frames)
+    const res = await fetch(
+      `https://api.figma.com/v1/files/${state.fileKey}/nodes?ids=${encodeURIComponent(pageId)}&depth=2`,
+      { headers: { 'X-Figma-Token': state.pat } }
+    );
+    if (!res.ok) throw new Error(`Could not fetch page nodes (${res.status}).`);
+    const data = await res.json();
+    const pageNode = data.nodes[pageId]?.document;
+    if (!pageNode) throw new Error('Page data not found. Try refreshing.');
 
-    const pageNode=data.nodes[pageId]?.document;
-    if(!pageNode) throw new Error('Page data not found. Try refreshing.');
+    state.currentPage = pageNode;
+    renderFrameGrid(pageNode.children || []);
 
-    state.currentPage=pageNode;
-    renderFrameGrid(pageNode.children||[]);
-
-  } catch(e) {
-    grid.innerHTML='';
-    showError('frames-error','frames-error-msg',e.message||'Failed to load frames. Try again.');
+  } catch (e) {
+    grid.innerHTML = '';
+    showError('frames-error','frames-error-msg', e.message || 'Failed to load frames.');
   }
 }
 
 function renderFrameGrid(children) {
-  state.selectedFrame=null;
-  document.getElementById('export-btn').disabled=true;
-  const frames=children.filter(n=>['FRAME','COMPONENT','COMPONENT_SET','GROUP','SECTION'].includes(n.type));
-  const grid=document.getElementById('frames-grid');
-  grid.innerHTML='';
+  const frames = children.filter(n => ['FRAME','COMPONENT','COMPONENT_SET','GROUP','SECTION'].includes(n.type));
+  const grid = document.getElementById('frames-grid');
+  grid.innerHTML = '';
 
-  if(!frames.length){
-    grid.innerHTML=`<div style="grid-column:1/-1;color:var(--md-on-surface-variant);font-size:13px;padding:16px 0">No top-level frames found on this page. Try a different page.</div>`;
+  if (!frames.length) {
+    grid.innerHTML = `<div style="grid-column:1/-1;color:var(--md-on-surface-variant);font-size:13px;padding:16px 0">No top-level frames on this page. Try another page.</div>`;
     return;
   }
 
-  // Bulk thumbnail request
-  const ids=frames.map(f=>encodeURIComponent(f.id)).join(',');
-  fetch(`https://api.figma.com/v1/images/${state.fileKey}?ids=${ids}&format=png&scale=0.5`,{headers:{'X-Figma-Token':state.pat}})
-    .then(r=>r.json()).then(data=>{
-      frames.forEach(f=>{
-        const imgUrl=data.images?.[f.id];
-        const el=document.getElementById('thumb-'+f.id.replace(/:/g,'_'));
-        if(el&&imgUrl) el.innerHTML=`<img src="${imgUrl}" alt="${f.name}" loading="lazy">`;
-      });
-    }).catch(()=>{});
+  // Bulk thumbnails — pass raw IDs (comma-separated), no extra encoding needed
+  const rawIds = frames.map(f => f.id).join(',');
+  fetch(`https://api.figma.com/v1/images/${state.fileKey}?ids=${encodeURIComponent(rawIds)}&format=png&scale=0.5`, {
+    headers: { 'X-Figma-Token': state.pat }
+  }).then(r => r.json()).then(data => {
+    frames.forEach(f => {
+      const imgUrl = data.images?.[f.id];
+      const el = document.getElementById('thumb-' + f.id.replace(/[^a-z0-9]/gi,'_'));
+      if (el && imgUrl) el.innerHTML = `<img src="${imgUrl}" alt="${f.name}" loading="lazy">`;
+    });
+  }).catch(() => {});
 
-  frames.forEach(frame=>{
-    const bb=frame.absoluteBoundingBox;
-    const w=bb?Math.round(bb.width):'?', h=bb?Math.round(bb.height):'?';
-    const safeId=frame.id.replace(/:/g,'_');
-    const card=document.createElement('div');
-    card.className='frame-card';
-    card.innerHTML=`<div class="frame-thumb" id="thumb-${safeId}"><span class="material-symbols-outlined">dashboard</span></div><div class="frame-name" title="${frame.name}">${frame.name}</div><div class="frame-size">${w} × ${h} px</div>`;
-    card.onclick=()=>selectFrame(frame,card);
+  frames.forEach(frame => {
+    const bb = frame.absoluteBoundingBox;
+    const w = bb ? Math.round(bb.width) : '?', h = bb ? Math.round(bb.height) : '?';
+    const safeId = frame.id.replace(/[^a-z0-9]/gi, '_');
 
-    if(state.hintNodeId&&frame.id===state.hintNodeId){
-      setTimeout(()=>{card.click();card.scrollIntoView({behavior:'smooth',block:'nearest'});},250);
+    const card = document.createElement('div');
+    card.className = 'frame-card' + (state.selectedFrames.has(frame.id) ? ' selected' : '');
+    card.innerHTML = `
+      <div class="frame-check"></div>
+      <div class="frame-thumb" id="thumb-${safeId}"><span class="material-symbols-outlined">dashboard</span></div>
+      <div class="frame-name" title="${frame.name}">${frame.name}</div>
+      <div class="frame-size">${w} × ${h} px</div>`;
+    card.onclick = () => toggleFrame(frame, card);
+
+    // Auto-select hinted frame
+    if (state.hintNodeId && frame.id === state.hintNodeId) {
+      setTimeout(() => { card.click(); card.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 250);
     }
     grid.appendChild(card);
   });
 }
 
-function selectFrame(frame,card){
-  document.querySelectorAll('.frame-card').forEach(c=>c.classList.remove('selected'));
-  card.classList.add('selected');
-  state.selectedFrame=frame;
-  document.getElementById('export-btn').disabled=false;
-}
+// ── STEP 3: EXPORT ──
+async function exportFrames() {
+  if (!state.selectedFrames.size) return;
+  const frames = Array.from(state.selectedFrames.values());
+  const isMulti = frames.length > 1;
 
-async function exportFrame(){
-  if(!state.selectedFrame) return;
   goStep(3); showPanel('panel-export');
-  const loadEl=document.getElementById('export-loading');
-  const contentEl=document.getElementById('export-content');
-  const errEl=document.getElementById('export-error');
+  const loadEl = document.getElementById('export-loading');
+  const contentEl = document.getElementById('export-content');
+  const errEl = document.getElementById('export-error');
   loadEl.classList.remove('hidden'); contentEl.classList.add('hidden'); errEl.classList.add('hidden');
 
   try {
-    const nodeId=encodeURIComponent(state.selectedFrame.id);
-    document.getElementById('export-loading-msg').textContent='Requesting SVG export from Figma…';
+    // Build comma-separated IDs — raw, no double-encoding of colons
+    const ids = frames.map(f => f.id).join(',');
 
-    const imgRes=await fetch(`https://api.figma.com/v1/images/${state.fileKey}?ids=${nodeId}&format=svg&svg_include_id=true&svg_simplify_stroke=true`,{headers:{'X-Figma-Token':state.pat}});
-    if(!imgRes.ok) throw new Error(`Export API error (${imgRes.status}). Please try again.`);
-    const imgData=await imgRes.json();
-    if(imgData.err) throw new Error(`Figma export error: ${imgData.err}`);
+    document.getElementById('export-loading-msg').textContent = `Requesting SVG export for ${frames.length} frame${isMulti?'s':''}…`;
 
-    const svgUrl=imgData.images?.[state.selectedFrame.id];
-    if(!svgUrl) throw new Error('Figma returned no SVG URL. The frame may be empty or hidden.');
+    // Key fix: pass ids without wrapping encodeURIComponent around the whole thing.
+    // The comma is safe unencoded in a query string; colons in node IDs are also fine unencoded.
+    const imgRes = await fetch(
+      `https://api.figma.com/v1/images/${state.fileKey}?ids=${ids}&format=svg&svg_include_id=true&svg_simplify_stroke=true`,
+      { headers: { 'X-Figma-Token': state.pat } }
+    );
+    if (!imgRes.ok) {
+      const errData = await imgRes.json().catch(() => ({}));
+      throw new Error(errData.message || `Figma images API error (${imgRes.status}).`);
+    }
+    const imgData = await imgRes.json();
+    if (imgData.err) throw new Error(`Figma export error: ${imgData.err}`);
 
-    document.getElementById('export-loading-msg').textContent='Downloading vector SVG…';
-    const svgRes=await fetch(svgUrl);
-    if(!svgRes.ok) throw new Error('Could not download SVG from Figma CDN. Try again.');
-    const svgText=await svgRes.text();
-    state.svgContent=svgText;
+    // Fetch all SVGs in parallel
+    document.getElementById('export-loading-msg').textContent = 'Downloading SVGs…';
+    const results = await Promise.all(frames.map(async frame => {
+      const svgUrl = imgData.images?.[frame.id];
+      if (!svgUrl) throw new Error(`No SVG URL returned for frame "${frame.name}". It may be empty or hidden.`);
+      const r = await fetch(svgUrl);
+      if (!r.ok) throw new Error(`Failed to download SVG for "${frame.name}".`);
+      const svg = await r.text();
+      return { name: frame.name, id: frame.id, svg, frame };
+    }));
 
-    // Preview
-    document.getElementById('preview-area').innerHTML=svgText;
-    const ps=document.querySelector('#preview-area svg');
-    if(ps){ps.style.maxWidth='100%';ps.style.maxHeight='480px';ps.style.height='auto';}
+    state.exportedSvgs = results;
 
-    // Meta
-    const bb=state.selectedFrame.absoluteBoundingBox;
-    const w=bb?Math.round(bb.width):'?', h=bb?Math.round(bb.height):'?';
-    const kb=(new Blob([svgText]).size/1024).toFixed(1);
-    document.getElementById('output-meta').innerHTML=`
-      <span class="chip"><span class="material-symbols-outlined">straighten</span>${w} × ${h} px</span>
-      <span class="chip"><span class="material-symbols-outlined">file_present</span>${kb} KB</span>
-      <span class="chip"><span class="material-symbols-outlined">layers</span>${state.selectedFrame.name}</span>
+    // ── PREVIEW ──
+    const previewArea = document.getElementById('preview-area');
+    previewArea.innerHTML = '';
+    results.forEach(r => {
+      const wrap = document.createElement('div');
+      wrap.className = 'preview-thumb';
+      wrap.innerHTML = r.svg;
+      const s = wrap.querySelector('svg');
+      if (s) { s.style.maxWidth='100%'; s.style.maxHeight='200px'; s.style.height='auto'; }
+      const lbl = document.createElement('div');
+      lbl.className = 'preview-thumb-label'; lbl.textContent = r.name;
+      wrap.appendChild(lbl);
+      previewArea.appendChild(wrap);
+    });
+
+    // ── META CHIPS ──
+    const totalKb = (results.reduce((a,r) => a + new Blob([r.svg]).size, 0) / 1024).toFixed(1);
+    document.getElementById('output-meta').innerHTML = `
+      <span class="chip"><span class="material-symbols-outlined">layers</span>${results.length} frame${results.length>1?'s':''}</span>
+      <span class="chip"><span class="material-symbols-outlined">file_present</span>${totalKb} KB total</span>
       <span class="chip"><span class="material-symbols-outlined">verified</span>Editable Vector</span>`;
 
-    // Downloads
-    const safe=state.selectedFrame.name.replace(/[^a-z0-9_\-]/gi,'_');
-    const dlSvg=document.getElementById('dl-svg');
-    dlSvg.href=URL.createObjectURL(new Blob([svgText],{type:'image/svg+xml;charset=utf-8'}));
-    dlSvg.download=safe+'.svg';
-    const dlAi=document.getElementById('dl-ai');
-    dlAi.href=URL.createObjectURL(new Blob([buildAI(svgText,state.selectedFrame.name,w,h)],{type:'application/postscript'}));
-    dlAi.download=safe+'.ai';
+    // ── SUCCESS MSG ──
+    document.getElementById('export-success-msg').textContent = isMulti
+      ? `${results.length} frames exported successfully. Download the ZIP to open each in Illustrator.`
+      : 'Vector SVG fetched successfully. Fully editable in Adobe Illustrator.';
 
-    loadEl.classList.add('hidden'); contentEl.classList.remove('hidden');
+    // ── DOWNLOAD BUTTONS ──
+    const dlRow = document.getElementById('download-row');
+    dlRow.innerHTML = '';
 
-  } catch(e) {
-    loadEl.classList.add('hidden'); errEl.classList.remove('hidden');
-    document.getElementById('export-error-msg').textContent=e.message||'Export failed. Please try again.';
+    if (isMulti) {
+      // ZIP of all SVGs
+      document.getElementById('export-loading-msg').textContent = 'Building ZIP…';
+      const zip = new JSZip();
+      results.forEach(r => {
+        const safe = r.name.replace(/[^a-z0-9_\-]/gi,'_');
+        zip.file(`${safe}.svg`, r.svg);
+      });
+      const zipBlob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
+      const zipUrl = URL.createObjectURL(zipBlob);
+      const a = document.createElement('a');
+      a.className = 'download-btn'; a.href = zipUrl;
+      a.download = (state.fileName||'figmator').replace(/[^a-z0-9_\-]/gi,'_') + '_frames.zip';
+      a.innerHTML = `<span class="download-btn-label">All Frames</span><span class="download-btn-type">.ZIP</span><span class="download-btn-desc">${results.length} SVG files bundled</span>`;
+      dlRow.appendChild(a);
+    } else {
+      // Single frame — SVG + AI
+      const r = results[0];
+      const safe = r.name.replace(/[^a-z0-9_\-]/gi,'_');
+      const svgBlob = new Blob([r.svg], { type:'image/svg+xml;charset=utf-8' });
+      const aSvg = document.createElement('a');
+      aSvg.className = 'download-btn'; aSvg.href = URL.createObjectURL(svgBlob); aSvg.download = safe+'.svg';
+      aSvg.innerHTML = `<span class="download-btn-label">Vector File</span><span class="download-btn-type">.SVG</span><span class="download-btn-desc">Opens natively in Illustrator</span>`;
+      dlRow.appendChild(aSvg);
+
+      const aiBlob = new Blob([buildAI(r.svg, r.name, r.frame)], { type:'application/postscript' });
+      const aAi = document.createElement('a');
+      aAi.className = 'download-btn'; aAi.href = URL.createObjectURL(aiBlob); aAi.download = safe+'.ai';
+      aAi.innerHTML = `<span class="download-btn-label">Illustrator</span><span class="download-btn-type">.AI</span><span class="download-btn-desc">Adobe AI compatible format</span>`;
+      dlRow.appendChild(aAi);
+    }
+
+    loadEl.classList.add('hidden');
+    contentEl.classList.remove('hidden');
+
+  } catch (e) {
+    loadEl.classList.add('hidden');
+    errEl.classList.remove('hidden');
+    document.getElementById('export-error-msg').textContent = e.message || 'Export failed. Please try again.';
   }
 }
 
-function buildAI(svg,name,w,h){
-  const wp=((parseFloat(w)||800)*0.75).toFixed(3), hp=((parseFloat(h)||600)*0.75).toFixed(3);
-  return `%!PS-Adobe-3.0\n%%Creator: Figma to Illustrator Converter\n%%Title: (${name})\n%%CreationDate: (${new Date().toISOString()})\n%%DocumentData: Clean7Bit\n%%LanguageLevel: 2\n%%Pages: 1\n%%BoundingBox: 0 0 ${Math.ceil(wp)} ${Math.ceil(hp)}\n%%HiResBoundingBox: 0.000 0.000 ${wp} ${hp}\n%%AI8_CreatorVersion: 16.0.0\n%%EndComments\n%%BeginProlog\n%%EndProlog\n%%BeginSetup\n%%EndSetup\n%%Page: 1 1\n%%BeginPageSetup\n%%PageBoundingBox: 0 0 ${Math.ceil(wp)} ${Math.ceil(hp)}\n%%EndPageSetup\n%AI7_BeginLayer\n1 1 1 1 0 0 0 0 128 255 0 0 0 0 0 0\n(Layer 1) XV\n%AI7_EndLayer--\n%%PageTrailer\n%%Trailer\n%%EOF\n${svg}`;
+// ── AI WRAPPER ──
+function buildAI(svg, name, frame) {
+  const bb = frame?.absoluteBoundingBox;
+  const w = bb ? bb.width : 800, h = bb ? bb.height : 600;
+  const wp = (w * 0.75).toFixed(3), hp = (h * 0.75).toFixed(3);
+  return `%!PS-Adobe-3.0\n%%Creator: Figmator\n%%Title: (${name})\n%%CreationDate: (${new Date().toISOString()})\n%%DocumentData: Clean7Bit\n%%LanguageLevel: 2\n%%Pages: 1\n%%BoundingBox: 0 0 ${Math.ceil(wp)} ${Math.ceil(hp)}\n%%HiResBoundingBox: 0.000 0.000 ${wp} ${hp}\n%%AI8_CreatorVersion: 16.0.0\n%%EndComments\n%%BeginProlog\n%%EndProlog\n%%BeginSetup\n%%EndSetup\n%%Page: 1 1\n%%BeginPageSetup\n%%PageBoundingBox: 0 0 ${Math.ceil(wp)} ${Math.ceil(hp)}\n%%EndPageSetup\n%AI7_BeginLayer\n1 1 1 1 0 0 0 0 128 255 0 0 0 0 0 0\n(Layer 1) XV\n%AI7_EndLayer--\n%%PageTrailer\n%%Trailer\n%%EOF\n${svg}`;
 }
 
-function goBack(){goStep(1);showPanel('panel-connect');}
-function goToFrames(){goStep(2);showPanel('panel-frames');state.selectedFrame=null;document.getElementById('export-btn').disabled=true;document.querySelectorAll('.frame-card').forEach(c=>c.classList.remove('selected'));}
-function reset(){Object.assign(state,{pat:'',fileKey:'',fileName:'',pages:[],currentPage:null,selectedFrame:null,svgContent:null,hintNodeId:null});document.getElementById('pat-input').value='';document.getElementById('url-input').value='';goStep(1);showPanel('panel-connect');}
+// ── NAVIGATION ──
+function goBack() { goStep(1); showPanel('panel-connect'); }
+function goToFrames() {
+  goStep(2); showPanel('panel-frames');
+  state.selectedFrames.clear();
+  document.querySelectorAll('.frame-card').forEach(c => c.classList.remove('selected'));
+  updateSelectionBar();
+}
+function reset() {
+  Object.assign(state, { pat:'', fileKey:'', fileName:'', pages:[], currentPage:null, hintNodeId:null, exportedSvgs:[] });
+  state.selectedFrames.clear();
+  document.getElementById('pat-input').value = '';
+  document.getElementById('url-input').value = '';
+  goStep(1); showPanel('panel-connect');
+}
 
-document.addEventListener('keydown',e=>{
-  if(e.key==='Escape') closeGuide();
-  if(e.key==='Enter'&&!document.getElementById('panel-connect').classList.contains('hidden')) connectFigma();
+// ── KEYBOARD ──
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeGuide();
+  if (e.key === 'Enter' && !document.getElementById('panel-connect').classList.contains('hidden')) connectFigma();
 });
 </script>
 </body>
